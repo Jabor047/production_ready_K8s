@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-server
+  labels:
+    app: go-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: go-server
+  template:
+    metadata:
+      labels:
+        app: go-server
+    spec:
+      containers:
+      - name: go-server
+        image: gcr.io/dt-kevin-sandbox-dev/k8s_demo/go_app:latest
+        ports:
+        - containerPort: 8866
+        resources:
+          requests:
+            memory: "10Mi"
+            cpu: "100m"
+          limits:
+            memory: "20Mi"
+            cpu: "250m"
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8866
+          initialDelaySeconds: 3
+          periodSeconds: 3
+          failureThreshold: 2
+        # readinessProbe:
+        #   httpGet:
+        #     path: /healthz
+        #     port: 8866
+        #   initialDelaySeconds: 3
+        #   periodSeconds: 3
+        #   minReadySeconds: 5
+        startupProbe:
+          httpGet:
+            path: /
+            port: 8866
+          failureThreshold: 10
